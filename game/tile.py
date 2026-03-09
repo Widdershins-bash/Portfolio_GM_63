@@ -6,7 +6,7 @@ class Tile:
     def __init__(self, surface: pygame.Surface) -> None:
         self.surface: pygame.Surface = surface
 
-        self.size: int = 16
+        self.size: int = 32
 
     def create_platform(self, width: int, height: int) -> None:
 

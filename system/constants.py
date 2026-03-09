@@ -1,27 +1,31 @@
 import pygame
 from enum import Enum, auto
 
-# main
-GRID_CONSTANT: int = 32  # tile size in px
 
-# screen
-LOGICAL_WIDTH: int = 640
-LOGICAL_HEIGHT: int = 360
-FPS: int = 120
+class Main:
+    GRID_CONSTANT: int = 32  # tile size in px
 
-# image
-IMAGE_PATH: str = "assets/images/"
 
-# music
-MUSIC_PATH: str = "assets/audio/"
+class Screen:
+    LOGICAL_WIDTH: int = 640
+    LOGICAL_HEIGHT: int = 360
+    FPS: int = 120
+
+
+class Image:
+    IMAGE_PATH: str = "assets/images/"
+
+
+class Audio:
+    AUDIO_PATH: str = "assets/audio/"
 
 
 # color palette
 class ColorPalette:
     BLACK: pygame.typing.ColorLike = (0, 0, 0)
+    WHITE: pygame.typing.ColorLike = (255, 255, 255)
 
 
-# game state
 class GameState(Enum):
     MAIN_MENU = auto()
     PLAY = auto()
@@ -30,5 +34,5 @@ class GameState(Enum):
     PAUSE = auto()
 
 
-# fonts
-class Font: ...
+class Font:
+    BASE: pygame.Font = pygame.Font("freesansbold.ttf")
