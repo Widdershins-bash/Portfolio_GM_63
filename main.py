@@ -1,10 +1,10 @@
 import pygame
+
+pygame.init()
+
 from game.tile import Tile
 from system.screen import Screen
 from system.constants import Main, GameState as gs
-
-
-pygame.init()
 
 
 def get_delta_time(clock: pygame.Clock, fps: int):

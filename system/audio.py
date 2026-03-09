@@ -9,7 +9,7 @@ class SFX:
 
         self.jump_sfx: pygame.mixer.Sound = pygame.mixer.Sound(self.path + "jump.ogg")
 
-    def update_volume(self):
+    def update_volume(self) -> None:
         converted_volume: float = self.audio_state.volume / 100
 
         self.jump_sfx.set_volume(converted_volume)
