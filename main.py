@@ -1,5 +1,7 @@
 import pygame
 from game.tile import Tile
+from system.screen import Screen
+from system.constants import GRID_CONSTANT, GameState as gs
 
 
 pygame.init()
@@ -11,35 +13,31 @@ def get_delta_time(clock: pygame.Clock, fps: int):
     return delta_time
 
 
-screen: pygame.Surface = pygame.display.set_mode((600, 600))
+screen: Screen = Screen(grid_constant=GRID_CONSTANT)
 
-clock: pygame.Clock = pygame.Clock()
-FPS: int = 60
+tile: Tile = Tile(surface=screen.logical)
 
-tile: Tile = Tile(surface=screen)
+if __name__ == "__main__":
 
-color_seq: float = 0
-running: bool = True
-while running:
+    color_seq: float = 0
+    game_state: gs = gs.PLAY
 
-    delta_time: float = get_delta_time(clock=clock, fps=FPS)
+    while screen.running:
+        for event in pygame.event.get():
+            if screen.running:
+                screen.handle_events(event=event, game_state=game_state)
 
-    red: int = int(color_seq) % 255
-    green: int = (int(color_seq) + 85) % 255
-    blue: int = (int(color_seq) + 170) % 255
-    screen.fill((red, green, blue))
+        delta_time: float = get_delta_time(clock=screen.clock, fps=screen.fps)
 
-    tile.create_platform(width=10, height=10)
+        color_seq += 50 * delta_time
+        red: int = int(color_seq) % 255
+        green: int = (int(color_seq) + 85) % 255
+        blue: int = (int(color_seq) + 170) % 255
+        screen.logical.fill((red, green, blue))
 
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
+        tile.create_platform(width=10, height=10)
 
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_ESCAPE:
-                running = False
+        screen.draw_overlay()
+        screen.scale_flip()
 
-    color_seq += 50 * delta_time
-    pygame.display.flip()
-
-pygame.quit()
+    pygame.quit()
