@@ -3,7 +3,7 @@ from enum import Enum, auto
 
 
 class Main:
-    GRID_CONSTANT: int = 6  # tile size in px
+    GRID_CONSTANT: int = 8  # tile size in px
 
 
 class Screen:
@@ -14,6 +14,11 @@ class Screen:
 
 class Camera:
     EASING_MULTIPLIER: int = 2
+
+
+class Player:
+    SPEED: int = 100
+    RADIUS: int = Main.GRID_CONSTANT // 2
 
 
 class Floor:
@@ -30,8 +35,12 @@ class Audio:
 
 # color palette
 class ColorPalette:
-    BLACK: pygame.typing.ColorLike = (0, 0, 0)
-    WHITE: pygame.typing.ColorLike = (255, 255, 255)
+    BLACK: pygame.typing.ColorLike = "#000000"
+    GRAY: pygame.typing.ColorLike = "#666666"
+    WHITE: pygame.typing.ColorLike = "#ffffff"
+
+    DARK_GREEN: pygame.typing.ColorLike = "#00731f"
+    YELLOW: pygame.typing.ColorLike = "#eaff00"
 
 
 class GameState(Enum):

@@ -37,6 +37,9 @@ class Screen:
         elif event.type == pygame.WINDOWMINIMIZED:
             self.screen = pygame.display.set_mode((self.logical_width, self.logical_height), pygame.RESIZABLE)
 
+    def clear(self):
+        self.logical.fill(cp.BLACK)
+
     def scale_flip(self) -> None:
 
         self.scalar = max(1, min(self.screen.width, self.screen.height) // self.logical_height)

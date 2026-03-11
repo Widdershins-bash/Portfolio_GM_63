@@ -22,13 +22,15 @@ if __name__ == "__main__":
 
     while screen.running:
 
+        screen.clear()
+
         delta_time: float = get_delta_time(clock=screen.clock, fps=screen.fps)
 
         for event in pygame.event.get():
             if screen.running:
                 screen.handle_events(event=event, game_state=game_state)
 
-        world.update()
+        world.update(delta_time=delta_time)
         world.draw()
 
         screen.scale_flip()
