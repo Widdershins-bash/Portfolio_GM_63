@@ -17,7 +17,7 @@ class Camera:
 
 
 class Player:
-    SPEED: int = 100
+    SPEED: int = Main.GRID_CONSTANT * 5
     RADIUS: int = Main.GRID_CONSTANT // 2
 
 

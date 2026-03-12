@@ -34,4 +34,4 @@ class Player:
         self.y_pos += camera_offset[1]
 
     def draw(self) -> None:
-        pygame.draw.rect(self.surface, cp.YELLOW, self.get_rect())
+        pygame.draw.rect(self.surface, cp.YELLOW, self.get_rect(), border_radius=p.RADIUS)

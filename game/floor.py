@@ -60,24 +60,42 @@ class FloorConfiguration:
 
         return entrance_row, entrance_col, exit_row, exit_col
 
-    def get_valid_directions(self, current_row: int, current_col: int) -> list[Direction]:
+    def check_direction(
+        self, row: int, col: int, direction: Direction, room_dict: dict[tuple[int, int], Room]
+    ) -> Direction | None:
+        move: tuple[int, int] = self.movement_dict[direction]
+        next_row = row + move[0]
+        next_col = col + move[1]
+
+        if (next_row, next_col) not in room_dict:
+            return direction
+
+    def get_next_direction(
+        self, current_row: int, current_col: int, room_dict: dict[tuple[int, int], Room]
+    ) -> Direction | None:
         valid: list[Direction] = []
         row: int = current_row
         col: int = current_col
 
-        if row - 1 >= 0:
+        if row - 1 >= 0 and self.check_direction(row=row, col=col, direction=Direction.NORTH, room_dict=room_dict):
             valid.append(Direction.NORTH)
 
-        if row + 1 < self.rows:
+        if row + 1 < self.rows and self.check_direction(
+            row=row, col=col, direction=Direction.SOUTH, room_dict=room_dict
+        ):
             valid.append(Direction.SOUTH)
 
-        if col - 1 >= 0:
+        if col - 1 >= 0 and self.check_direction(row=row, col=col, direction=Direction.WEST, room_dict=room_dict):
             valid.append(Direction.WEST)
 
-        if col + 1 < self.cols:
+        if col + 1 < self.cols and self.check_direction(
+            row=row, col=col, direction=Direction.EAST, room_dict=room_dict
+        ):
             valid.append(Direction.EAST)
 
-        return valid
+        if valid:
+            random_dir: Direction = random.choice(valid)
+            return random_dir
 
     # TODO in the future, make generate_path retrace it's steps if it has no empty rooms to go to next.
     # Maybe convert to BSP generation later (if you have more time than you bargained for)
@@ -101,21 +119,29 @@ class FloorConfiguration:
         current_row: int = ent_row
         current_col: int = ent_col
 
+        movement_tracker: list[tuple[int, int]] = [(current_row, current_col)]
+        movement_pointer: int = 0
         calculating: bool = True
         while calculating:
-            valid_dirs: list[Direction] = self.get_valid_directions(current_row=current_row, current_col=current_col)
-            random_dir: Direction = random.choice(valid_dirs)
-            move_dir: tuple[int, int] = self.movement_dict[random_dir]
+            next_dir: Direction | None = self.get_next_direction(
+                current_row=current_row, current_col=current_col, room_dict=room_dict
+            )
+            if not next_dir:
+                movement_pointer -= 1
+                current_row, current_col = movement_tracker[movement_pointer]
+                continue
+
+            move_dir: tuple[int, int] = self.movement_dict[next_dir]
 
             next_row: int = current_row + move_dir[0]
             next_col: int = current_col + move_dir[1]
 
             current_room: Room = room_dict[(current_row, current_col)]
-            current_room.add_door(door=random_dir)
+            current_room.add_door(door=next_dir)
 
             if (next_row, next_col) not in room_dict:
                 if (next_row, next_col) == (ex_row, ex_col):
-                    exit_room.add_door(door=self.door_connections_dict[random_dir])
+                    exit_room.add_door(door=self.door_connections_dict[next_dir])
 
                     calculating = False
                     continue
@@ -127,17 +153,19 @@ class FloorConfiguration:
                     col=next_col,
                     room_type=RoomType.NORMAL,
                 )
-                new_room.add_door(door=self.door_connections_dict[random_dir])
+                new_room.add_door(door=self.door_connections_dict[next_dir])
 
                 room_dict[(next_row, next_col)] = new_room
 
             else:
                 next_room: Room = room_dict[(next_row, next_col)]
-                next_room.add_door(door=self.door_connections_dict[random_dir])
+                next_room.add_door(door=self.door_connections_dict[next_dir])
 
             # move pointer
             current_row = next_row
             current_col = next_col
+            movement_tracker.append((current_row, current_col))
+            movement_pointer += 1
 
         room_dict[exit_room.get_loc()] = exit_room
         return room_dict
@@ -151,6 +179,8 @@ class Floor:
 
     def update(self, camera_offset: tuple[float, float]):
         for room in self.path.values():
+            room.start_x += camera_offset[0]  # I am only doing this in case I need to access room positions later
+            room.start_y += camera_offset[1]
             room.update(camera_offset=camera_offset)
 
     def draw(self):
@@ -190,9 +220,9 @@ class Room:
 
         self.width: int = self.grid_constant * fl.ROOM_UNIT_SIZE
         self.height: int = self.grid_constant * fl.ROOM_UNIT_SIZE
-        self.margin: int = self.grid_constant
-        self.start_x: int = self.col * (self.margin + self.width)
-        self.start_y: int = self.row * (self.margin + self.height)
+        self.spacing: int = self.grid_constant
+        self.start_x: float = self.col * (self.spacing + self.width) + (self.surface.width - self.width) // 2
+        self.start_y: float = self.row * (self.spacing + self.height) + (self.surface.height - self.height) // 2
 
         self.door_pos_dict: dict[Direction, tuple[int, int]] = {
             Direction.SOUTH: (1, 2),
@@ -215,9 +245,9 @@ class Room:
         tiles: list[Tile] = []
         for row in range(fl.ROOM_UNIT_SIZE):
             for col in range(fl.ROOM_UNIT_SIZE):
-                x: int = col * self.grid_constant + self.start_x
-                y: int = row * self.grid_constant + self.start_y
-                tiles.append(self.tile_config.create_tile(x=x, y=y, color=cp.DARK_GREEN))
+                x: float = col * self.grid_constant + self.start_x
+                y: float = row * self.grid_constant + self.start_y
+                tiles.append(self.tile_config.create_tile(x=int(x), y=int(y), color=cp.DARK_GREEN))
 
         return tiles
 
@@ -227,9 +257,9 @@ class Room:
 
         doors: list[Tile] = []
         for door in self.doors:
-            converted_x: int = self.start_x + base_x * self.door_pos_dict[door][0]
-            converted_y: int = self.start_y + base_y * self.door_pos_dict[door][1]
-            doors.append(self.tile_config.create_tile(x=converted_x, y=converted_y, color=cp.GRAY))
+            converted_x: float = self.start_x + base_x * self.door_pos_dict[door][0]
+            converted_y: float = self.start_y + base_y * self.door_pos_dict[door][1]
+            doors.append(self.tile_config.create_tile(x=int(converted_x), y=int(converted_y), color=cp.GRAY))
 
         return doors
 
