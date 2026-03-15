@@ -70,6 +70,8 @@ class GameState(Enum):
 
 
 class Font:
-    BASE: pygame.Font = pygame.Font("freesansbold.ttf")
-    ACCENTUATED: pygame.Font = pygame.Font("freesansbold.ttf", 40)
-    STATS: pygame.Font = pygame.Font("freesansbold.ttf", 15)
+    path: str = "assets/fonts/"
+    jacq: str = "Jacquard12-Regular.ttf"
+    BASE: pygame.Font = pygame.Font(path + jacq, 20)
+    ACCENTUATED: pygame.Font = pygame.Font(path + jacq, 40)
+    STATS: pygame.Font = pygame.Font(path + jacq, 20)
