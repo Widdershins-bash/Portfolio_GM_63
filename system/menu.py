@@ -32,9 +32,13 @@ class MenuManager:
 
         self.level_select_menu: Menu = Menu(
             surface=self.surface,
-            buttons=self.button.progression_buttons,
+            buttons=self.button.level_complete_buttons,
             active_state=gs.LEVEL_SELECT,
             bg_color=cp.ALPHA_GRAY,
+        )
+
+        self.level_lose_menu: Menu = Menu(
+            surface=self.surface, buttons=self.button.level_lose_buttons, active_state=gs.LOSE, bg_color=cp.ALPHA_GRAY
         )
 
         self.menus: list[Menu] = [
@@ -44,6 +48,7 @@ class MenuManager:
             self.settings_widget,
             self.settings_menu,
             self.level_select_menu,
+            self.level_lose_menu,
         ]
 
     def update(self, viewport: pygame.Rect, scale: int) -> None:

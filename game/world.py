@@ -26,7 +26,15 @@ class World:
         self.finish_timer_event: int = pygame.event.custom_type()
 
     def start_world(self, init_state: gs):
-        self.__init__(surface=self.surface, grid_constant=self.grid_constant, init_state=init_state)
+        self.game_state = init_state
+        self.floor_manager: FloorManager = FloorManager(surface=self.surface, grid_constant=self.grid_constant)
+        self.player: Player = Player(surface=self.surface, size=self.grid_constant)
+        self.camera_offset: tuple[float, float] = (0, 0)
+        self.camera: Camera = Camera(surface=self.surface, grid_constant=self.grid_constant)
+
+        self.stat_tracker.initial_time = len(self.floor_manager.floor.path.values()) * 2
+        self.stat_tracker.timer = self.stat_tracker.initial_time
+        self.stat_tracker.timer_on = False
 
     def get_wall_tiles(self) -> list[BaseTile]:
         walls: list[BaseTile] = []
@@ -86,8 +94,29 @@ class World:
         self.camera_offset = self.camera.get_offset(dx=room.x_pos, dy=room.y_pos, delta_time=delta_time)
 
     def update_stats(self):
-        self.stat_tracker.score += 1
+        self.stat_tracker.initial_time = len(self.floor_manager.floor.path.values()) * 2
+        self.stat_tracker.timer = self.stat_tracker.initial_time
+        self.stat_tracker.timer_on = False
+        self.stat_tracker.floor += 1
+        if self.stat_tracker.floor > self.stat_tracker.highest_floor:
+            self.stat_tracker.highest_floor = self.stat_tracker.floor
+
         self.stat_tracker.floor_size = (self.floor_manager.floor_size[0], self.floor_manager.floor_size[1])
+
+    def update_stats_timer(self):
+        room_in: Room = self.get_room_player_in()
+
+        if room_in == self.floor_manager.floor.exit:
+            self.stat_tracker.timer_on = False
+
+        elif room_in != self.floor_manager.floor.entrance and not self.stat_tracker.timer_on:
+            self.stat_tracker.start_timer()
+
+        if self.stat_tracker.timer == 0:
+            self.game_state = gs.LOSE
+            self.stat_tracker.timer = (
+                self.stat_tracker.initial_time
+            )  # temporary reset so that it dosnt loop the loosing state
 
     def update(self, delta_time: float, viewport: pygame.Rect, scale: int) -> None:
         if self.game_state == gs.NEXT:
@@ -100,7 +129,8 @@ class World:
             self.update_collisions(delta_time=delta_time)
             self.floor_manager.update(camera_offset=self.camera_offset)
             self.player.update(camera_offset=self.camera_offset, viewport=viewport, scale=scale)
-            self.stat_tracker.update()
+            self.stat_tracker.update(delta_time=delta_time)
+            self.update_stats_timer()
 
     def draw(self):
         self.floor_manager.draw()

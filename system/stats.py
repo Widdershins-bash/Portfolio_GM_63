@@ -9,20 +9,24 @@ class Stats:
         self.font: pygame.Font = Font.STATS
         self.font_color: pygame.typing.ColorLike = cp.BLACK
 
-        self.score: int = 0
-        self.high_score: int = 0
+        self.floor: int = 1
+        self.highest_floor: int = self.floor
+        self.speed: int = 0
         self.floor_size: tuple[int, int] = init_floor_size
-        self.timer: float = 0.0
+
+        self.timer_on: bool = False
+        self.initial_time: int = 1
+        self.timer: float = self.initial_time
 
         self.margin: int = 5
         self.surfaces: list[pygame.Surface] = []
 
     def get_score_surface(self) -> pygame.Surface:
-        text: str = f"Floors Traversed: {self.score}"
+        text: str = f"Floor: {self.floor}"
         return self.font.render(text, True, self.font_color)
 
-    def get_highscore_surface(self) -> pygame.Surface:
-        text: str = f"Lowest Floor: {self.high_score}"
+    def get_speed_surface(self) -> pygame.Surface:
+        text: str = f"Speed: +%{self.speed}"
         return self.font.render(text, True, self.font_color)
 
     def get_floor_size_surface(self) -> pygame.Surface:
@@ -30,7 +34,11 @@ class Stats:
         return self.font.render(text, True, self.font_color)
 
     def get_timer_surface(self) -> pygame.Surface:
-        text: str = f"Timer: {self.timer}"
+        text: str = f"Timer: {self.timer:.1f}"
+        return self.font.render(text, True, self.font_color)
+
+    def get_highest_floor_surface(self) -> pygame.Surface:
+        text: str = f"Session Best: {self.highest_floor}"
         return self.font.render(text, True, self.font_color)
 
     def get_box_size(self) -> tuple[int, int]:
@@ -44,9 +52,23 @@ class Stats:
 
         return stat_box_width, stat_box_height
 
-    def update(self):
+    def start_timer(self):
+        self.timer = self.initial_time
+        self.timer_on = True
+
+    def update_timer(self, delta_time: float):
+        if self.timer <= 0:
+            self.timer = 0
+
+        elif self.timer_on:
+            self.timer -= delta_time
+
+    def update(self, delta_time: float):
+        self.update_timer(delta_time=delta_time)
         self.surfaces = [
             self.get_score_surface(),
+            self.get_highest_floor_surface(),
+            self.get_speed_surface(),
             self.get_floor_size_surface(),
             self.get_timer_surface(),
         ]

@@ -4,7 +4,7 @@ from enum import Enum, auto
 
 class Main:
     BASE_CONSTANT: int = 32  # never used in the game, rather, just used for setting the grid standard
-    BASE_DIVISOR: int = 2
+    BASE_DIVISOR: int = 1
     GRID_CONSTANT: int = max(6, BASE_CONSTANT // BASE_DIVISOR)  # tile size in px
     BUTTON_CONSTANT: int = BASE_CONSTANT
 
@@ -67,6 +67,7 @@ class GameState(Enum):
     NEXT = auto()
     LEVEL_SELECT = auto()
     PAUSE = auto()
+    LOSE = auto()
 
 
 class Font:

@@ -38,8 +38,13 @@ class ButtonConfig:
             VolumeSlider(surface=self.surface, image=self.sprite.volume, knob_image=self.sprite.knob),
         ]
 
-        self.progression_buttons: list[Button] = [
+        self.level_complete_buttons: list[Button] = [
             ActionButton(surface=self.surface, image=self.sprite.next_level, action=gs.NEXT),
+            ActionButton(surface=self.surface, image=self.sprite.menu, action=gs.MAIN_MENU),
+        ]
+
+        self.level_lose_buttons: list[Button] = [
+            ActionButton(surface=self.surface, image=self.sprite.restart, action=gs.PLAY),
             ActionButton(surface=self.surface, image=self.sprite.menu, action=gs.MAIN_MENU),
         ]
 
