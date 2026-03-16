@@ -96,6 +96,7 @@ class Button:
         self.touching: bool = False
 
         self.mouse_pos: tuple[int, int] | None = None
+        self.mouse_was_down: bool = False
 
         self.base_image: pygame.Surface = self.display_image
         self.glow_image: pygame.Surface = self.create_hue(offset=40)
@@ -113,25 +114,27 @@ class Button:
 
         return hue
 
-    def scale_mouse(self, viewport: pygame.Rect, scale: int) -> tuple[int, int] | None:
+    def scale_mouse(self, viewport: pygame.Rect, scale: float) -> tuple[int, int] | None:
         mouse_x, mouse_y = pygame.mouse.get_pos()
         if not viewport.collidepoint((mouse_x, mouse_y)):
             return None
 
-        scale_x: int = (mouse_x - viewport.x) // scale
-        scale_y: int = (mouse_y - viewport.y) // scale
+        scale_x: int = int((mouse_x - viewport.x) * self.surface.get_width() / viewport.width)
+        scale_y: int = int((mouse_y - viewport.y) * self.surface.get_height() / viewport.height)
 
         return scale_x, scale_y
 
     def check_for_click(self) -> None:
         mouse_down: bool = pygame.mouse.get_pressed()[0]
-        mouse_up: bool = pygame.mouse.get_just_released()[0]
+        mouse_up: bool = self.mouse_was_down and not mouse_down
 
         if mouse_down:
             self.display_image = self.shadow_image
 
         elif mouse_up:
             self.clicked = True
+
+        self.mouse_was_down = mouse_down
 
     def check_for_focus(self) -> None:
         self.display_image = self.glow_image
@@ -142,7 +145,7 @@ class Button:
             self.focused = True
             self.ping_focused = True
 
-    def update(self, viewport: pygame.Rect, scale: int) -> None:
+    def update(self, viewport: pygame.Rect, scale: float) -> None:
         self.mouse_pos = self.scale_mouse(viewport=viewport, scale=scale)
         if not self.mouse_pos:
             return
@@ -161,6 +164,7 @@ class Button:
         self.ping_focused = False
         self.focused = False
         self.touching = False
+        self.mouse_was_down = False
         self.display_image = self.base_image
 
 
@@ -177,7 +181,7 @@ class ActionButton(Button):
     ) -> None:
         super().__init__(surface, image, press_image, enabled, action, pos)
 
-    def update(self, viewport: pygame.Rect, scale: int) -> None:
+    def update(self, viewport: pygame.Rect, scale: float) -> None:
         super().update(viewport, scale)
 
         if self.touching:
@@ -230,7 +234,7 @@ class VolumeSlider(Button):
 
         return False
 
-    def update(self, viewport: pygame.Rect, scale: int) -> None:
+    def update(self, viewport: pygame.Rect, scale: float) -> None:
         super().update(viewport, scale)
         if self.knob.start_pos == (0, 0):
             self.knob.start_pos = self.get_knob_pos()
@@ -268,7 +272,7 @@ class SliderKnob(Button):
 
         self.mouse_in_range: bool = False
 
-    def update(self, viewport: pygame.Rect, scale: int) -> None:
+    def update(self, viewport: pygame.Rect, scale: float) -> None:
         super().update(viewport, scale)
         if self.touching:
             self.check_for_focus()

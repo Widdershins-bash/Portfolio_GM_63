@@ -1,4 +1,5 @@
 import pygame
+import asyncio
 
 pygame.init()
 
@@ -7,6 +8,7 @@ from system.menu import MenuManager
 from system.audio import SFX
 from system.constants import Main, GameState as gs
 from game.world import World
+from system.image import Image
 
 
 def get_delta_time(clock: pygame.Clock, fps: int):
@@ -15,47 +17,56 @@ def get_delta_time(clock: pygame.Clock, fps: int):
     return delta_time
 
 
-game_state: gs = gs.MAIN_MENU
+async def main():
+    image: Image = Image()
 
-screen: Screen = Screen()
-sfx: SFX = SFX()
-world: World = World(surface=screen.logical, grid_constant=Main.GRID_CONSTANT, init_state=game_state, sfx=sfx)
-menu: MenuManager = MenuManager(surface=screen.alpha, init_state=game_state, sfx=sfx)
+    pygame.display.set_caption("Looping The Rooms")
+    pygame.display.set_icon(image.icon)
 
-if __name__ == "__main__":
+    game_state: gs = gs.MAIN_MENU
 
-    game_state: gs = gs.PLAY
+    screen: Screen = Screen()
+    sfx: SFX = SFX()
+    world: World = World(surface=screen.logical, grid_constant=Main.GRID_CONSTANT, init_state=game_state, sfx=sfx)
+    menu: MenuManager = MenuManager(surface=screen.alpha, init_state=game_state, sfx=sfx)
 
-    while screen.running:
+    if __name__ == "__main__":
 
-        screen.clear()
+        game_state: gs = gs.PLAY
 
-        delta_time: float = get_delta_time(clock=screen.clock, fps=screen.fps)
-        if menu.game_state != game_state:
+        while screen.running:
 
-            if (game_state == gs.MAIN_MENU and menu.game_state == gs.PLAY) or (
-                game_state == gs.LOSE and menu.game_state == gs.PLAY
-            ):
-                world.start_world(init_state=gs.PLAY)
+            screen.clear()
 
-            game_state = menu.game_state
-            world.game_state = menu.game_state
+            delta_time: float = get_delta_time(clock=screen.clock, fps=screen.fps)
+            if menu.game_state != game_state:
 
-        if world.game_state != game_state:
-            game_state = world.game_state
-            menu.game_state = world.game_state
+                if (game_state == gs.MAIN_MENU and menu.game_state == gs.PLAY) or (
+                    game_state == gs.LOSE and menu.game_state == gs.PLAY
+                ):
+                    world.start_world(init_state=gs.PLAY)
 
-        for event in pygame.event.get():
-            if screen.running:
-                screen.handle_events(event=event, game_state=game_state)
-                world.handle_events(event=event)
+                game_state = menu.game_state
+                world.game_state = menu.game_state
 
-        menu.update(viewport=screen.viewport, scale=screen.scalar)
-        menu.draw()
+            if world.game_state != game_state:
+                game_state = world.game_state
+                menu.game_state = world.game_state
 
-        world.update(delta_time=delta_time, viewport=screen.viewport, scale=screen.scalar)
-        world.draw()
+            for event in pygame.event.get():
+                if screen.running:
+                    screen.handle_events(event=event, game_state=game_state)
+                    world.handle_events(event=event)
 
-        screen.scale_flip()
+            menu.update(viewport=screen.viewport, scale=screen.scalar)
+            menu.draw()
+
+            world.update(delta_time=delta_time, viewport=screen.viewport, scale=screen.scalar)
+            world.draw()
+
+            screen.scale_flip()
+            await asyncio.sleep(0)
 
     pygame.quit()
+
+asyncio.run(main())

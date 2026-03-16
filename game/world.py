@@ -30,7 +30,7 @@ class World:
         )
 
         self.event_ping: bool = True
-        self.finish_timer_event: int = pygame.event.custom_type()
+        self.finish_delay: float | None = None
 
     def start_world(self, init_state: gs):
         self.game_state = init_state
@@ -110,13 +110,11 @@ class World:
             self.floor_manager.display_room_found()
             if self.event_ping:
                 self.sfx.level_complete_sfx.play()
-                pygame.time.set_timer(self.finish_timer_event, 2000, loops=1)
+                self.finish_delay = 2.0
                 self.event_ping = False
 
     def handle_events(self, event: pygame.Event):
-        if event.type == self.finish_timer_event:
-            self.event_ping = True
-            self.game_state = gs.LEVEL_SELECT
+        return
 
     def update_camera_offset(self, delta_time: float) -> None:
         room: Room = self.get_room_player_in()
@@ -150,7 +148,7 @@ class World:
                 self.stat_tracker.initial_time
             )  # temporary reset so that it doesn't loop the loosing state
 
-    def update(self, delta_time: float, viewport: pygame.Rect, scale: int) -> None:
+    def update(self, delta_time: float, viewport: pygame.Rect, scale: float) -> None:
         if self.game_state == gs.NEXT:
             self.floor_manager.floor = self.floor_manager.spawn_floor()
             self.update_stats()
@@ -168,6 +166,12 @@ class World:
                 exit_pos=self.floor_manager.floor.exit.center,
             )
             self.update_stats_timer()
+            if self.finish_delay is not None:
+                self.finish_delay -= delta_time
+                if self.finish_delay <= 0:
+                    self.finish_delay = None
+                    self.event_ping = True
+                    self.game_state = gs.LEVEL_SELECT
 
     def draw(self):
         self.floor_manager.draw()

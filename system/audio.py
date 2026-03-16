@@ -20,7 +20,7 @@ class SFX:
         self.upgrade_sfx: pygame.mixer.Sound = pygame.mixer.Sound(self.path + "collect.ogg")
         self.level_complete_sfx: pygame.mixer.Sound = pygame.mixer.Sound(self.path + "shortwin.ogg")
 
-        pygame.mixer.music.load(self.path + "VGM.mp3")
+        pygame.mixer.music.load(self.path + "VGM.ogg")
         pygame.mixer.music.play(-1)
 
         self.audio_state.set_volume(value=50)

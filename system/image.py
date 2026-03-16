@@ -6,6 +6,8 @@ class Image:
     def __init__(self) -> None:
         self.path: str = im.IMAGE_PATH
 
+        self.icon: pygame.Surface = self.gen_image(self.path + "gameIcon.png")
+
     def gen_image(self, path: str, scalar: float | None = None) -> pygame.Surface:
         image: pygame.Surface = pygame.image.load(path)
         if scalar:

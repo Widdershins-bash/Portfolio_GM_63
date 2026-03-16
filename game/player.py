@@ -47,11 +47,11 @@ class Player:
             Direction.RIGHT: self.sprite.idle_right,
         }
 
-    def scale_mouse(self, viewport: pygame.Rect, scale: int) -> tuple[int, int]:
+    def scale_mouse(self, viewport: pygame.Rect, scale: float) -> tuple[int, int]:
         mouse_x, mouse_y = pygame.mouse.get_pos()
 
-        scale_x: int = (mouse_x - viewport.x) // scale
-        scale_y: int = (mouse_y - viewport.y) // scale
+        scale_x: int = int((mouse_x - viewport.x) * self.surface.get_width() / viewport.width)
+        scale_y: int = int((mouse_y - viewport.y) * self.surface.get_height() / viewport.height)
 
         return scale_x, scale_y
 
@@ -95,7 +95,7 @@ class Player:
         if self.direction:
             self.sound_ping += self.sound_speed * delta_time
 
-    def update(self, delta_time: float, camera_offset: tuple[float, float], viewport: pygame.Rect, scale: int) -> None:
+    def update(self, delta_time: float, camera_offset: tuple[float, float], viewport: pygame.Rect, scale: float) -> None:
         self.x_pos += camera_offset[0]
         self.y_pos += camera_offset[1]
 

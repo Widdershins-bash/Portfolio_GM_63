@@ -51,7 +51,7 @@ class MenuManager:
             self.level_lose_menu,
         ]
 
-    def update(self, viewport: pygame.Rect, scale: int) -> None:
+    def update(self, viewport: pygame.Rect, scale: float) -> None:
         for menu in self.menus:
             if self.game_state == menu.active_state or menu.always_visible:
                 menu.update(viewport=viewport, scale=scale, sfx=self.sfx)
@@ -125,7 +125,7 @@ class Menu:
         for button in self.buttons:
             button.prep_state()
 
-    def update(self, viewport: pygame.Rect, scale: int, sfx: SFX) -> None:
+    def update(self, viewport: pygame.Rect, scale: float, sfx: SFX) -> None:
         self.check_open()
         for button in self.buttons:
             button.update(viewport=viewport, scale=scale)
