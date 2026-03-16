@@ -43,10 +43,15 @@ class World:
         )
         self.camera_offset: tuple[float, float] = (0, 0)
         self.camera: Camera = Camera(surface=self.surface, grid_constant=self.grid_constant)
+        self.stat_tracker_reset()
 
+    def stat_tracker_reset(self):
         self.stat_tracker.initial_time = len(self.floor_manager.floor.path.values()) * 2
         self.stat_tracker.timer = self.stat_tracker.initial_time
         self.stat_tracker.timer_on = False
+        self.stat_tracker.floor = 1
+        self.stat_tracker.floor_size = (self.floor_manager.floor_size[0], self.floor_manager.floor_size[1])
+        self.stat_tracker.speed = 0
 
     def get_wall_tiles(self) -> list[BaseTile]:
         walls: list[BaseTile] = []
@@ -104,6 +109,7 @@ class World:
         if self.player_found_exit():
             self.floor_manager.display_room_found()
             if self.event_ping:
+                self.sfx.level_complete_sfx.play()
                 pygame.time.set_timer(self.finish_timer_event, 2000, loops=1)
                 self.event_ping = False
 
@@ -148,6 +154,7 @@ class World:
         if self.game_state == gs.NEXT:
             self.floor_manager.floor = self.floor_manager.spawn_floor()
             self.update_stats()
+            self.player.x_pos, self.player.y_pos = self.floor_manager.floor.entrance.center
             self.game_state = gs.PLAY
 
         if self.game_state == gs.PLAY:

@@ -120,7 +120,8 @@ class Theme(Image):
         self.br_corner: pygame.Surface
 
         # still have to figure out code
-        self.item: pygame.Surface
+        self.upgrade: pygame.Surface
+        self.trophy: pygame.Surface
 
         self.north_door: pygame.Surface
         self.south_door: pygame.Surface
@@ -133,6 +134,8 @@ class TileThemeOne(Theme):
         super().__init__()
 
         self.theme_path = "MapTiles.png"
+        self.item_path = "GameItems.png"
+        self.item_sheet = self.gen_image(self.path + self.item_path, scalar=im.TILE_SCALAR)
         self.sheet = self.gen_image(self.path + self.theme_path, scalar=im.TILE_SCALAR)
 
         self.floor = self.sheet.subsurface(self.x_scalar * 2, self.y_scalar * 3, self.x_scalar, self.y_scalar)
@@ -157,6 +160,9 @@ class TileThemeOne(Theme):
         self.south_door = self.sheet.subsurface(0, 0, self.x_scalar * 2, self.y_scalar)
         self.west_door = self.sheet.subsurface(self.x_scalar, self.y_scalar * 2, self.x_scalar, self.y_scalar * 2)
         self.east_door = self.sheet.subsurface(0, self.y_scalar * 2, self.x_scalar, self.y_scalar * 2)
+
+        self.upgrade = self.item_sheet.subsurface(self.x_scalar, 0, self.x_scalar, self.y_scalar)
+        self.trophy = self.item_sheet.subsurface(0, 0, self.x_scalar, self.y_scalar)
 
 
 class TileThemeTwo(Theme):

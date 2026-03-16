@@ -44,7 +44,7 @@ class FloorManager:
 
     def display_room_found(self):
         message: str = "You Found The Exit!"
-        display: pygame.Surface = Font.ACCENTUATED.render(text=message, antialias=True, color=cp.BLACK)
+        display: pygame.Surface = Font.ACCENTUATED.render(text=message, antialias=True, color=cp.WHITE)
         self.surface.blit(display, ((self.surface.width - display.width) // 2, self.grid_constant * 4))
 
     def draw(self):
@@ -236,13 +236,13 @@ class Floor:
         item: BaseTile = self.upgrade_room.tile_config.create_item(
             x=int(self.upgrade_room.center[0]),
             y=int(self.upgrade_room.center[1]),
-            color=cp.YELLOW,
+            image=self.upgrade_room.theme.upgrade,
         )
         return item
 
     def set_exit_marker(self) -> BaseTile:
         marker: BaseTile = self.exit.tile_config.create_collide(
-            x=int(self.exit.center[0]), y=int(self.exit.center[1]), color=cp.MAGENTA
+            x=int(self.exit.center[0]), y=int(self.exit.center[1]), image=self.exit.theme.trophy
         )
         return marker
 

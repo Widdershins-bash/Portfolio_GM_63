@@ -18,11 +18,13 @@ class SFX:
             pygame.mixer.Sound(self.path + "stone_step_4.ogg"),
         ]
         self.upgrade_sfx: pygame.mixer.Sound = pygame.mixer.Sound(self.path + "collect.ogg")
-
-        self.audio_state.set_volume(value=50)
+        self.level_complete_sfx: pygame.mixer.Sound = pygame.mixer.Sound(self.path + "shortwin.ogg")
 
         pygame.mixer.music.load(self.path + "VGM.mp3")
         pygame.mixer.music.play(-1)
+
+        self.audio_state.set_volume(value=50)
+        self.update_volume()
 
     def update_volume(self) -> None:
         converted_volume: float = self.audio_state.volume / 100
