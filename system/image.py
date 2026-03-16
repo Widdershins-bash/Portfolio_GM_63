@@ -19,7 +19,7 @@ class ButtonSprite(Image):
         super().__init__()
 
         self.y_scalar: int = Main.BUTTON_CONSTANT
-        self.x_scalar: int = Main.BUTTON_CONSTANT * 4
+        self.x_scalar: int = Main.BUTTON_CONSTANT
         self.sheet: pygame.Surface = self.gen_image(self.path + "tileset.png")
 
         self.play: pygame.Surface = self.sheet.subsurface(0, 0, self.x_scalar, self.y_scalar)
@@ -31,6 +31,27 @@ class ButtonSprite(Image):
         self.menu: pygame.Surface = self.sheet.subsurface(0, 0, self.x_scalar, self.y_scalar)
         self.volume: pygame.Surface = self.sheet.subsurface(0, 0, self.x_scalar, self.y_scalar)
         self.knob: pygame.Surface = self.sheet.subsurface(0, 0, 18, 18)
+
+
+class PlayerSprite(Image):
+    def __init__(self) -> None:
+        super().__init__()
+
+        self.y_scalar: int = 21
+        self.x_scalar: int = 23
+        self.sheet: pygame.Surface = self.gen_image(self.path + "playerWalkAnimation.png")
+
+        self.idle_down: pygame.Surface = self.gen_image(self.path + "idle.png")
+        self.idle_right: pygame.Surface = pygame.transform.rotate(self.idle_down, 90)
+        self.idle_up: pygame.Surface = pygame.transform.rotate(self.idle_down, 180)
+        self.idle_left: pygame.Surface = pygame.transform.rotate(self.idle_down, 270)
+
+        self.walk_down: list[pygame.Surface] = [
+            self.sheet.subsurface(self.x_scalar * i, 0, self.x_scalar, self.y_scalar) for i in range(7)
+        ]
+        self.walk_right: list[pygame.Surface] = [pygame.transform.rotate(image, 90) for image in self.walk_down]
+        self.walk_up: list[pygame.Surface] = [pygame.transform.rotate(image, 180) for image in self.walk_down]
+        self.walk_left: list[pygame.Surface] = [pygame.transform.rotate(image, 270) for image in self.walk_down]
 
 
 class ThemeManager:
@@ -75,34 +96,31 @@ class TileThemeOne(Theme):
     def __init__(self) -> None:
         super().__init__()
 
-        self.theme_path = "tileset.png"
+        self.theme_path = "MapTiles.png"
         self.sheet = self.gen_image(self.path + self.theme_path, scalar=im.TILE_SCALAR)
 
-        self.floor = self.sheet.subsurface(
-            self.x_scalar, self.sheet.height - self.y_scalar * 2, self.x_scalar, self.y_scalar
-        )
-        self.north_wall = self.sheet.subsurface(0, self.sheet.height - self.y_scalar * 2, self.x_scalar, self.y_scalar)
-        self.east_wall = self.sheet.subsurface(0, self.sheet.height - self.y_scalar * 2, self.x_scalar, self.y_scalar)
-        self.south_wall = self.sheet.subsurface(0, self.sheet.height - self.y_scalar * 2, self.x_scalar, self.y_scalar)
-        self.west_wall = self.sheet.subsurface(0, self.sheet.height - self.y_scalar * 2, self.x_scalar, self.y_scalar)
+        self.floor = self.sheet.subsurface(self.x_scalar * 2, self.y_scalar * 3, self.x_scalar, self.y_scalar)
 
-        self.tl_corner = self.sheet.subsurface(0, self.sheet.height - self.y_scalar * 2, self.x_scalar, self.y_scalar)
-        self.tr_corner = self.sheet.subsurface(0, self.sheet.height - self.y_scalar * 2, self.x_scalar, self.y_scalar)
-        self.bl_corner = self.sheet.subsurface(0, self.sheet.height - self.y_scalar * 2, self.x_scalar, self.y_scalar)
-        self.br_corner = self.sheet.subsurface(0, self.sheet.height - self.y_scalar * 2, self.x_scalar, self.y_scalar)
+        self.wall_image: pygame.Surface = self.sheet.subsurface(
+            self.x_scalar * 2, self.y_scalar, self.x_scalar, self.y_scalar
+        )
+        self.north_wall = pygame.transform.rotate(self.wall_image, 270)
+        self.east_wall = pygame.transform.rotate(self.wall_image, 180)
+        self.south_wall = pygame.transform.rotate(self.wall_image, 90)
+        self.west_wall = pygame.transform.rotate(self.wall_image, 0)
 
-        self.north_door = self.sheet.subsurface(
-            self.x_scalar, self.sheet.height - self.y_scalar * 2, self.x_scalar, self.y_scalar
+        self.corner_image: pygame.Surface = self.sheet.subsurface(
+            self.x_scalar * 2, self.y_scalar * 2, self.x_scalar, self.y_scalar
         )
-        self.south_door = self.sheet.subsurface(
-            self.x_scalar, self.sheet.height - self.y_scalar * 2, self.x_scalar, self.y_scalar
-        )
-        self.west_door = self.sheet.subsurface(
-            self.x_scalar, self.sheet.height - self.y_scalar * 2, self.x_scalar, self.y_scalar
-        )
-        self.east_door = self.sheet.subsurface(
-            self.x_scalar, self.sheet.height - self.y_scalar * 2, self.x_scalar, self.y_scalar
-        )
+        self.tl_corner = pygame.transform.rotate(self.corner_image, 0)
+        self.tr_corner = pygame.transform.rotate(self.corner_image, 270)
+        self.bl_corner = pygame.transform.rotate(self.corner_image, 90)
+        self.br_corner = pygame.transform.rotate(self.corner_image, 180)
+
+        self.north_door = self.sheet.subsurface(0, self.y_scalar, self.x_scalar * 2, self.y_scalar)
+        self.south_door = self.sheet.subsurface(0, 0, self.x_scalar * 2, self.y_scalar)
+        self.west_door = self.sheet.subsurface(self.x_scalar, self.y_scalar * 2, self.x_scalar, self.y_scalar * 2)
+        self.east_door = self.sheet.subsurface(0, self.y_scalar * 2, self.x_scalar, self.y_scalar * 2)
 
 
 class TileThemeTwo(Theme):

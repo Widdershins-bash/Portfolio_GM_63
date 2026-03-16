@@ -44,7 +44,7 @@ class FloorManager:
 
     def display_room_found(self):
         message: str = "You Found The Exit!"
-        display: pygame.Surface = Font.ACCENTUATED.render(text=message, antialias=True, color=cp.MAGENTA)
+        display: pygame.Surface = Font.ACCENTUATED.render(text=message, antialias=True, color=cp.BLACK)
         self.surface.blit(display, ((self.surface.width - display.width) // 2, self.grid_constant * 4))
 
     def draw(self):
@@ -71,7 +71,6 @@ class FloorConfiguration:
         self.theme: Theme = random.choice(self.theme_list)
 
         self.entrance: tuple[int, int] = self.get_random_entrance()
-        print(self.possible_spawns)
         self.exit: tuple[int, int] = self.get_random_exit()
 
         self.movement_dict: dict[Direction, tuple[int, int]] = {

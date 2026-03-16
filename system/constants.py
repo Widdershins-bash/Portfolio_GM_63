@@ -76,5 +76,5 @@ class Font:
     med: str = "medieval.ttf"
     BASE: pygame.Font = pygame.Font(path + med, 20)
     ACCENTUATED: pygame.Font = pygame.Font(path + med, 40)
-    STATS: pygame.Font = pygame.Font(path + med, 16)
-    STATS_SMALL: pygame.Font = pygame.Font(path + med, 10)
+    STATS: pygame.Font = pygame.Font(path + med, 12)
+    STATS_SMALL: pygame.Font = pygame.Font(path + med, 8)

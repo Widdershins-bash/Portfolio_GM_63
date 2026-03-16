@@ -18,7 +18,10 @@ class World:
 
         self.floor_manager: FloorManager = FloorManager(surface=self.surface, grid_constant=self.grid_constant)
         self.player: Player = Player(
-            surface=self.surface, size=self.grid_constant, start_pos=self.floor_manager.floor.entrance.center
+            surface=self.surface,
+            size=self.grid_constant,
+            start_pos=self.floor_manager.floor.entrance.center,
+            sfx=self.sfx,
         )
         self.camera_offset: tuple[float, float] = (0, 0)
         self.camera: Camera = Camera(surface=self.surface, grid_constant=self.grid_constant)
@@ -33,7 +36,10 @@ class World:
         self.game_state = init_state
         self.floor_manager: FloorManager = FloorManager(surface=self.surface, grid_constant=self.grid_constant)
         self.player: Player = Player(
-            surface=self.surface, size=self.grid_constant, start_pos=self.floor_manager.floor.entrance.center
+            surface=self.surface,
+            size=self.grid_constant,
+            start_pos=self.floor_manager.floor.entrance.center,
+            sfx=self.sfx,
         )
         self.camera_offset: tuple[float, float] = (0, 0)
         self.camera: Camera = Camera(surface=self.surface, grid_constant=self.grid_constant)
@@ -98,7 +104,7 @@ class World:
         if self.player_found_exit():
             self.floor_manager.display_room_found()
             if self.event_ping:
-                pygame.time.set_timer(self.finish_timer_event, 20000, loops=1)
+                pygame.time.set_timer(self.finish_timer_event, 2000, loops=1)
                 self.event_ping = False
 
     def handle_events(self, event: pygame.Event):
@@ -148,7 +154,7 @@ class World:
             self.update_camera_offset(delta_time=delta_time)
             self.update_collisions(delta_time=delta_time)
             self.floor_manager.update(camera_offset=self.camera_offset)
-            self.player.update(camera_offset=self.camera_offset, viewport=viewport, scale=scale)
+            self.player.update(delta_time=delta_time, camera_offset=self.camera_offset, viewport=viewport, scale=scale)
             self.stat_tracker.update(
                 delta_time=delta_time,
                 player_pos=(self.player.x_pos, self.player.y_pos),
