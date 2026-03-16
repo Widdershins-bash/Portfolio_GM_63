@@ -6,7 +6,7 @@ This project works as both a playable game jam release and a strong portfolio pi
 
 ## 🔗 Play On Itch
 
-`[https://widdershins-bash.itch.io/looping-the-rooms]`
+[Play on itch.io](https://widdershins-bash.itch.io/looping-the-rooms)
 
 ## ✨ Highlights
 
